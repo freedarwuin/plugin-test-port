@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-sm-12 col-md-12">
             <div class="panel panel-primary panel-hovered panel-stacked mb30">
-                <div class="panel-heading">Testing port external</div>
+                <div class="panel-heading">Testing API Default Port</div>
                 <div class="panel-body">
                     <div class="form-group">
                         <label class="col-md-2 control-label">Port</label>
