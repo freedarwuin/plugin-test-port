@@ -9,7 +9,7 @@ function port_tester()
     $ui->assign('_title', 'Port Tester');
     $ui->assign('_system_menu', 'settings');
 
-    $port = _post('port', 8278);
+    $port = _post('port', 8728);
     $ui->assign('port', $port);
 
     if (isset($_POST['port']) && !empty($_POST['port'])) {
@@ -17,9 +17,9 @@ function port_tester()
         $result = 'portquiz.net IP: <b>' . gethostbyname('portquiz.net') . "</b>\n";
         $result .= Http::getData('http://portquiz.net:' . $port, ['User-Agent: wget']);
         if (strpos($result, 'successful')) {
-            $ui->assign('result', str_replace('Port test successful', "Testing Port <b>$port</b> test successful", $result));
+            $ui->assign('result', str_replace('Port test successful', "Testing Port <b>$port</b> Test Successful", $result));
         } else {
-            $ui->assign('result', "Testing Port <b>$port</b> test Failed");
+            $ui->assign('result', "Testing Port <b>$port</b> Test Failed");
         }
     }
 
