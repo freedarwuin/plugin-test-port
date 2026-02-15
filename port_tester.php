@@ -5,25 +5,56 @@ register_menu("Port Tester", true, "port_tester", 'SETTINGS', '');
 function port_tester()
 {
     global $ui;
+
     _admin();
+
     $ui->assign('_title', 'Port Tester');
     $ui->assign('_system_menu', 'settings');
 
-    $port = _post('port', 8278);
+    $port = (int) _post('port', 8278);
     $ui->assign('port', $port);
 
-    if (isset($_POST['port']) && !empty($_POST['port'])) {
-        ini_set('default_socket_timeout', 10);
-        $result = 'portquiz.net IP: <b>' . gethostbyname('portquiz.net') . "</b>\n";
-        $result .= Http::getData('http://portquiz.net:' . $port, ['User-Agent: wget']);
-        if (strpos($result, 'successful')) {
-            $ui->assign('result', str_replace('Port test successful', "Testing Port <b>$port</b> test successful", $result));
+    $result = '';
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        // Validación estricta
+        if ($port < 1 || $port > 65535) {
+            $result = "Invalid port number. Must be between 1 and 65535.";
         } else {
-            $ui->assign('result', "Testing Port <b>$port</b> test Failed");
+
+            $host = 'portquiz.net';
+
+            // Validar DNS
+            $ip = gethostbyname($host);
+
+            if ($ip === $host) {
+                $result = "DNS resolution failed for $host.";
+            } else {
+
+                $timeout = 5;
+                $errno = 0;
+                $errstr = '';
+
+                // Test TCP real
+                $connection = @fsockopen($host, $port, $errno, $errstr, $timeout);
+
+                if (is_resource($connection)) {
+
+                    fclose($connection);
+                    $result = "Port $port is OPEN and reachable.";
+
+                } else {
+
+                    $result = "Port $port is CLOSED or BLOCKED.";
+                }
+            }
         }
+
+        // Escape de seguridad
+        $ui->assign('result', htmlspecialchars($result));
     }
 
-    $admin = Admin::_info();
-    $ui->assign('_admin', $admin);
+    $ui->assign('_admin', Admin::_info());
     $ui->display('port_tester.tpl');
 }
